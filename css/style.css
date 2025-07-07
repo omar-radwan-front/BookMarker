@@ -3,17 +3,12 @@
    position: relative;
 
    } 
-
-
-
    .container h1 { 
    color: #352e28;
    font-family: "Pacifico", cursive;
    font-weight: 400;
    font-style: normal;
    font-size: 50px;
-
-
    }
    .container h1::before {
    content: "";
@@ -30,7 +25,6 @@
    .container h1:hover::before{
    height: 50%;
    }
-
    .sites{
    border-width: 2px 0 2px 0;
    border-color:black;
@@ -46,7 +40,35 @@
    font-style: normal;
    }
 
-
+  @media(max-width:767px){
+   .sites h2{
+     font-size: 20px; 
+   }
+   .button{
+      width: 100%;
+   }
+ 
+     table tr {
+        display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      
+     }
+      table tr th{width: 50%;}
+         table thead tr th{
+            color: #000;
+            font-weight: bold;
+            font-size: 20px;
+         }
+         table tbody tr th{
+            color: #706c6c !important;
+            font-weight: bold;
+            font-size: 20px;
+         }
+ 
+  }
  .form-control:focus {
     color: var(--bs-body-color);
     background-color: var(--bs-body-bg);

@@ -1,125 +1,83 @@
 
-
-
-
-
-
-
-
-
-
-// جلب العناصر من الـ DOM
+//    elements in html 
 var siteNameInput = document.getElementById("siteName");
 var siteURLInput = document.getElementById("siteURL");
 var submitBtn = document.getElementById("submitBtn");
 var tableContent = document.getElementById("tableContent");
 
-// مصفوفة لحفظ المواقع
-var sites = [];
-
-// تحميل البيانات من Local Storage لو موجودة
-if (localStorage.getItem("sites")) {
-  sites = JSON.parse(localStorage.getItem("sites"));
-  displaySites();
-}
-
-// Regex لأنماط التحقق
- var namePattern = /^[a-zA-Z0-9 ]{3,}$/;
- var urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9\-]+\.[a-z]{2,}(\S*)$/;
-
-// التحقق من صحة البيانات
-function validateInputs(name, url) {
-  var isValid = true;
-
-  if (!namePattern.test(name.trim())) {
-    siteNameInput.classList.add("is-invalid");
-    siteNameInput.classList.remove("is-valid");
-    isValid = false;
+var sitelist ;
+if (localStorage.getItem("sites")==null) {
+ sitelist =[];
+  
+} else {
+ sitelist =JSON.parse(localStorage.getItem("sites"));
+  display()
+}  
+// addsite 1 
+function addsite(params) {
+  var site ={
+    username :siteNameInput.value,
+    url : siteURLInput.value
+  }
+  if (siteNameInput.classList.contains("is-valid") && siteURLInput.classList.contains("is-valid") ) {
+    sitelist.push(site)
+  localStorage.setItem("sites",JSON.stringify(sitelist))
+  display()
+  clear()
   } else {
-    siteNameInput.classList.remove("is-invalid");
-    siteNameInput.classList.add("is-valid");
+    alert("this not valid")
   }
+ 
+}
 
-  if (!urlPattern.test(url.trim())) {
-    siteURLInput.classList.add("is-invalid");
-    siteURLInput.classList.remove("is-valid");
-    isValid = false;
+ // displaysite  2
+function display() {
+  var cartona ='';
+  for (let i = 0; i <sitelist.length; i++) {
+ cartona+=`   <tr><th class="text tt">${i+1}</th>
+            <th class="text tt">${sitelist[i].username}</th>
+            
+             
+            <th> <a href="${sitelist[i].url}" target="_blank" class="px-3 py-2 btn btn-success ">Visit <i class="fa-solid fa-eye"></i></a></th> 
+
+            <th class="text"><button onclick="deleteIndex(${i})" class="btn btn-danger px-3">Delete  <i class="fas fa-trash"></i></button></th>
+          </tr>`
+    
+  }
+  document.getElementById("tableContent").innerHTML=cartona;
+}
+
+
+  // deleteIndex 3
+function deleteIndex( index) {
+ sitelist.splice(index,1)
+ localStorage.setItem("sites",JSON.stringify(sitelist));
+ display()
+}
+
+  // validateInputs 4 
+function validateInputs(element) {
+  var regex ={
+  siteName : /^[A-z][a-z]{3,}$/,
+  siteURL : /^(https?:\/\/)?(www\.)?[a-zA-Z0-9\-]+\.[a-z]{2,}(\S*)$/
+
+  }
+   var result = regex[element.id].test(element.value);
+  if (result==true) {
+    element.classList.add("is-valid");
+    element.classList.remove("is-invalid");
   } else {
-    siteURLInput.classList.remove("is-invalid");
-    siteURLInput.classList.add("is-valid");
+    element.classList.add("is-invalid");
+    element.classList.remove("is-valid");
+  
   }
-
-  return isValid;
 }
 
-// التحقق الفوري أثناء الكتابة في الحقول
-siteNameInput.addEventListener("input", function () {
-  if (!namePattern.test(siteNameInput.value.trim())) {
-    siteNameInput.classList.add("is-invalid");
-    siteNameInput.classList.remove("is-valid");
-  } else {
-    siteNameInput.classList.remove("is-invalid");
-    siteNameInput.classList.add("is-valid");
-  }
-});
+//5 clear inputs
+function clear() {
+siteNameInput.value = null;
+siteNameInput.classList.remove("is-valid")  // to remove "is-valid" of inputs
 
-siteURLInput.addEventListener("input", function () {
-  if (!urlPattern.test(siteURLInput.value.trim())) {
-    siteURLInput.classList.add("is-invalid");
-    siteURLInput.classList.remove("is-valid");
-  } else {
-    siteURLInput.classList.remove("is-invalid");
-    siteURLInput.classList.add("is-valid");
-  }
-});
-
-// تنظيف الحقول بعد الإضافة
-function clearInputs() {
-  siteNameInput.value = "";
-  siteURLInput.value = "";
-  siteNameInput.classList.remove("is-valid", "is-invalid");
-  siteURLInput.classList.remove("is-valid", "is-invalid");
+siteURLInput.value = null;  
+siteURLInput.classList.remove("is-valid") 
 }
-
-// عرض المواقع في الجدول
-function displaySites() {
-  var table = "";
-  for (var i = 0; i < sites.length; i++) {
-    table += `
-      <tr>
-        <td>${i + 1}</td>
-        <td>${sites[i].name}</td>
-        <td><a href="${sites[i].url}" target="_blank" class="px-3 py-2 btn btn-success btn-sm">Visit <i class="fa-solid fa-eye"></i></a></td>
-        <td><button onclick="deleteSite(${i})" class="px-3 py-2   btn btn-danger btn-sm">Delete <i class ="fas fa-trash"></i></i></button></td>
-      </tr>
-    `;
-  }
-  tableContent.innerHTML = table;
-}
-
-// حذف موقع
-function deleteSite(index) {
-  sites.splice(index, 1);
-  localStorage.setItem("sites", JSON.stringify(sites));
-  displaySites();
-}
-
-// عند الضغط على زر الإضافة
-submitBtn.onclick = function () {
-  var siteName = siteNameInput.value;
-  var siteURL = siteURLInput.value;
-
-  if (!validateInputs(siteName, siteURL)) return;
-
-  var fullURL = siteURL.startsWith("http") ? siteURL : "https://" + siteURL;
-
-  var site = {
-    name: siteName,
-    url: fullURL
-  };
-
-  sites.push(site);
-  localStorage.setItem("sites", JSON.stringify(sites));
-  displaySites();
-  clearInputs();
-};
